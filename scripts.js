@@ -69,7 +69,6 @@ async function onProvider(provider) {
     selectedAccount = accounts[0];
 
     chainName = await web3Object.eth.getChainId();
-    chainId = networkToId[chainName]
   	console.log(chainId)
     console.log(selectedAccount)
     if (accounts.length) {
