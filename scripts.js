@@ -122,7 +122,7 @@ async function stake(){
             changeText("status", "Staking completed");
         }
 
-        async function stake(){
+        async function unstake(){
             var amount = document.getElementById("amount").value;
             amount = amount * 1000000;
                 let stakeInstance = new web3Object.eth.Contract(ABIContract, stakingContract);
