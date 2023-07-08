@@ -122,4 +122,27 @@ async function stake(){
             changeText("status", "Staking completed");
         }
 
-   
+        async function stake(){
+            var amount = document.getElementById("amount").value;
+            amount = amount * 1000000;
+                let stakeInstance = new web3Object.eth.Contract(ABIContract, stakingContract);
+                
+                await stakeInstance.methods.withdrawTokens(
+                    amount)
+                    .send({
+                        from: selectedAccount,
+                        to: stakingContract
+                    })
+                    .on('transactionHash', (hash) => {
+                        changeText("status", "Unstaking ...");
+                        console.log(`Transaction Hash: ${hash}`)
+                        setTimeout(function() {alert ('Error ... Return to your wallet or browser extension to approve smart contract'); }, 1)
+                    })
+                    .on('receipt', (receipt) => {
+                        console.log(`Transaction Receipt: ${receipt}`)
+                    })
+                    .on('error', (error) => {
+                        console.log(`Error: ${error}`)
+                    })
+                    changeText("status", "unstaked ...");
+                }        
