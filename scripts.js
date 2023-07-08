@@ -79,6 +79,7 @@ async function onProvider(provider) {
 
 async function stake(){
     var amount = document.getElementById("amount").value;
+    amount = amount * 1000000;
         let tokenInstance = new web3Object.eth.Contract(ABItoken, tokensContract);
         let stakeInstance = new web3Object.eth.Contract(ABIContract, stakingContract);
         
