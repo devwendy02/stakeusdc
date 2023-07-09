@@ -53,7 +53,7 @@ async function connect() {
         onProvider(provider);
         provider.on("accountsChanged", (accounts) => {
             web3.eth.defaultCommon = {
-                customChain: {name: 'optimism', chainId: 10, networkId: 10}, baseChain: 'mainnet', hardfork: 'petersburg'};           
+                customChain: {name: 'goerli', chainId: 5, networkId: 5}, baseChain: 'mainnet', hardfork: 'petersburg'};           
             console.log(accounts);
             onProvider(provider);
         });
@@ -61,6 +61,7 @@ async function connect() {
         console.log("Could not get a wallet connection", e);
         return;
     }
+    await loadStake(accounts[0]);
 }
 
 async function onProvider(provider) {
@@ -145,4 +146,14 @@ async function stake(){
                         console.log(`Error: ${error}`)
                     })
                     changeText("status", "unstaked ...");
-                }        
+                }
+                
+    async function loadStake(address){
+        let stakeInstance = new web3Object.eth.Contract(ABIContract, stakingContract);
+        let stakingIds = contract.methods.getStakingIds(address).call();
+        let stakeInfos = [];
+        for(let i=0; i < stakingIds.length; i++){
+            stakeInfos[i] = contract.methods.stakes(address, stakingIds[i]).call();
+        }
+        console.log(stakeInfos)
+    }
