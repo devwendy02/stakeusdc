@@ -1,5 +1,6 @@
 let tokensContract = "0xd35CCeEAD182dcee0F148EbaC9447DA2c4D449c4";
 let stakingContract = "0x2b52917b2dFD87CF47b40819a45654a4945c8022";
+let connectedAddress = "";
 let chainId = null;
 let web3Object = null;
 let selectedAccount = null;
@@ -61,13 +62,14 @@ async function connect() {
         console.log("Could not get a wallet connection", e);
         return;
     }
-    await loadStake(accounts[0]);
+   
 }
 
 async function onProvider(provider) {
     web3Object = new Web3(provider);
     let accounts = await web3Object.eth.getAccounts();
     selectedAccount = accounts[0];
+    connectedAddress = selectedAccount
 
     chainName = await web3Object.eth.getChainId();
   	console.log(chainId)
@@ -75,6 +77,7 @@ async function onProvider(provider) {
     if (accounts.length) {
         changeText("connectBtn", "Connected");
     }
+    await loadStake(selectedAccount);
 }
 
 
