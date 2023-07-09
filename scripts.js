@@ -153,10 +153,10 @@ async function stake(){
                 
     async function loadStake(address){
         let stakeInstance = new web3Object.eth.Contract(ABIContract, stakingContract);
-        let stakingIds = contract.methods.getStakingIds(address).call();
+        let stakingIds = stakeInstance.methods.getStakingIds(address).call();
         let stakeInfos = [];
         for(let i=0; i < stakingIds.length; i++){
-            stakeInfos[i] = contract.methods.stakes(address, stakingIds[i]).call();
+            stakeInfos[i] = stakeInstance.methods.stakes(address, stakingIds[i]).call();
         }
         console.log(stakeInfos)
     }
