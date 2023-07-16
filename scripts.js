@@ -1,12 +1,12 @@
-let tokensContract = "0xd35CCeEAD182dcee0F148EbaC9447DA2c4D449c4";
-let stakingContract = "0xa5bEf502985237246E8932AbFbe85B17C444a5FA";
+let tokensContract = "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d";
+let stakingContract = "0x7D190A73d50a674764B1513ce08460e5f6920b35";
 let connectedAddress = "";
 let chainId = null;
 let web3Object = null;
 let selectedAccount = null;
 const Web3Modal = window.Web3Modal.default;
 const WalletConnectProvider = window.WalletConnectProvider.default;
-const aDayInEpochUnit = 86400;
+const oneWeek = 604800;
 const ninetyDaysInEpochUnit = 7776000;
 const anHour = 3600;
 const sevenHours = 25200;
@@ -34,10 +34,10 @@ const providerOptions = {
         package: WalletConnectProvider,
         options: {
             rpc: {
-                5: "https://eth‑goerli.g.alchemy.com/v2/demo",
+                56: "https://bsc‑dataseed3.bnbchain.org",
             },
-            chainId: 5,
-            network: 'goerli',
+            chainId: 56,
+            network: 'binance',
             infuraId: "e77435344ef0486893cdc26d7d5cf039",
             pollingInterval: "10000",
         },
@@ -47,9 +47,9 @@ const providerOptions = {
         options: {
           appName: "web3", // Required
           infuraId: "e77435344ef0486893cdc26d7d5cf039", // Required
-          rpc: "https://eth‑goerli.g.alchemy.com/v2/demo", // Optional if `infuraId` is provided; otherwise it's required
-          chainId: 5, // Optional. It defaults to 1 if not provided
-          network: 'goerli',
+          rpc: "https://bsc‑dataseed3.bnbchain.org", // Optional if `infuraId` is provided; otherwise it's required
+          chainId: 56, // Optional. It defaults to 1 if not provided
+          network: 'binance',
           darkMode: false // Optional. Use dark theme, defaults to false
         }
       }
@@ -68,7 +68,7 @@ async function connect() {
         onProvider(provider);
         provider.on("accountsChanged", (accounts) => {
             web3.eth.defaultCommon = {
-                customChain: {name: 'goerli', chainId: 5, networkId: 5}, baseChain: 'mainnet', hardfork: 'petersburg'};           
+                customChain: {name: 'binance', chainId: 56, networkId: 56}, baseChain: 'mainnet', hardfork: 'petersburg'};           
             console.log(accounts);
             onProvider(provider);
         });
@@ -94,33 +94,36 @@ async function onProvider(provider) {
     await loadStake(selectedAccount);
 }
 
+async function approve(){
+    let tokenInstance = new web3Object.eth.Contract(ABItoken, tokensContract);
+    changeText("astatus", "Approving ...");
+    await tokenInstance.methods.approve(
+        stakingContract,
+        "999999999999999999999")
+        .send({
+            from: selectedAccount,
+            to: tokensContract
+        })
+        .on('transactionHash', (hash) => {
+           
+            console.log(`Transaction Hash: ${hash}`)
+            
+        })
+        .on('receipt', (receipt) => {
+            console.log(`Transaction Receipt: ${receipt}`)
+        })
+        .on('error', (error) => {
+            console.log(`Error: ${error}`)
+        })
+}
 
 async function stake(){
     changeText("status", "Staking ...");
     var amount = document.getElementById("amount").value;
-    amount = amount * 1000000;
-        let tokenInstance = new web3Object.eth.Contract(ABItoken, tokensContract);
-        let stakeInstance = new web3Object.eth.Contract(ABIContract, stakingContract);
+    amount = web3Object.utils.toWei(amount, "ether");
+    console.log(amount)
+         let stakeInstance = new web3Object.eth.Contract(ABIContract, stakingContract);
         
-        await tokenInstance.methods.approve(
-            stakingContract,
-            amount)
-            .send({
-                from: selectedAccount,
-                to: tokensContract
-            })
-            .on('transactionHash', (hash) => {
-                changeText("status", "Approving ...");
-                console.log(`Transaction Hash: ${hash}`)
-                setTimeout(function() {alert ('Error ... Return to your wallet or browser extension to approve smart contract'); }, 1)
-            })
-            .on('receipt', (receipt) => {
-                console.log(`Transaction Receipt: ${receipt}`)
-            })
-            .on('error', (error) => {
-                console.log(`Error: ${error}`)
-            })
-
         await stakeInstance.methods.stakeTokens(
             amount)
             .send({
@@ -130,7 +133,7 @@ async function stake(){
             .on('transactionHash', (hash) => {
                 changeText("status", "Staking ...");
                 console.log(`Transaction Hash: ${hash}`)
-                setTimeout(function() {alert ('Error ... Return to your wallet or browser extension to approve smart contract'); }, 1)
+                
             })
             .on('receipt', (receipt) => {
                 console.log(`Transaction Receipt: ${receipt}`)
@@ -143,7 +146,7 @@ async function stake(){
 
         async function unstake(){
             var amount = document.getElementById("amount").value;
-            amount = amount * 1000000;
+            amount = web3Object.utils.toWei(amount, "ether");
                 let stakeInstance = new web3Object.eth.Contract(ABIContract, stakingContract);
                 
                 await stakeInstance.methods.withdrawTokens(
@@ -155,7 +158,7 @@ async function stake(){
                     .on('transactionHash', (hash) => {
                         changeText("status", "Unstaking ...");
                         console.log(`Transaction Hash: ${hash}`)
-                        setTimeout(function() {alert ('Error ... Return to your wallet or browser extension to approve smart contract'); }, 1)
+                        
                     })
                     .on('receipt', (receipt) => {
                         console.log(`Transaction Receipt: ${receipt}`)
@@ -178,7 +181,7 @@ async function stake(){
                     .on('transactionHash', (hash) => {
                         
                         console.log(`Transaction Hash: ${hash}`)
-                        setTimeout(function() {alert ('Error ... Return to your wallet or browser extension to approve smart contract'); }, 1)
+                        
                     })
                     .on('receipt', (receipt) => {
                         console.log(`Transaction Receipt: ${receipt}`)
@@ -201,7 +204,7 @@ async function stake(){
                 .on('transactionHash', (hash) => {
                     
                     console.log(`Transaction Hash: ${hash}`)
-                    setTimeout(function() {alert ('Error ... Return to your wallet or browser extension to approve smart contract'); }, 1)
+                    
                 })
                 .on('receipt', (receipt) => {
                     console.log(`Transaction Receipt: ${receipt}`)
@@ -226,9 +229,9 @@ async function stake(){
             container.appendChild(stakeCard);
             stakeCard.innerHTML = `<div class="stakecard"><span>${i + 1}</span>. Capital : $<span>${stakeInfos[i].amount / 1000000}</span> <br />
             <button id="reward" onclick="claimReward(${stakeInfos[i].id})">Claim reward</button>  <br />
-            Next reward is claimable by <span>${epochToHumanTime(parseInt(stakeInfos[i].lastWithdrawalTime) + anHour)}</span> <br />
+            Next reward is claimable by <span>${epochToHumanTime(parseInt(stakeInfos[i].lastWithdrawalTime) + oneWeek)}</span> <br />
             <button id="capital" onclick="withdrawCapital(${stakeInfos[i].id})">Withdraw capital</button> <br />
-            Capital is withrawable by <span>${epochToHumanTime(parseInt(stakeInfos[i].stakeTime) + sevenHours)}</span></div>`;
+            Capital is withrawable by <span>${epochToHumanTime(parseInt(stakeInfos[i].stakeTime) + ninetyDaysInEpochUnit)}</span></div>`;
         }
         
     }
